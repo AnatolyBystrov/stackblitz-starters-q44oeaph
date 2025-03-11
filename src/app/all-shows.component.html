@@ -1,0 +1,7 @@
+<h2>All TV Shows</h2>
+<div class="shows">
+  <div class="show" *ngFor="let show of shows$ | async">
+    <img *ngIf="show.image" [src]="show.image.medium" [alt]="show.name" />
+    <h3>{{ show.name }}</h3>
+  </div>
+</div>

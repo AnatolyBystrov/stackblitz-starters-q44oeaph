@@ -1,0 +1,8 @@
+<h2>TV Show Search</h2>
+<input type="text" placeholder="Enter show name" (input)="search($event.target.value)" />
+<div class="shows">
+  <div class="show" *ngFor="let show of shows$ | async">
+    <img *ngIf="show.image" [src]="show.image.medium" [alt]="show.name" />
+    <h3>{{ show.name }}</h3>
+  </div>
+</div>

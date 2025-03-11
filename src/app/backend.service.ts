@@ -1,20 +1,36 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { HttpClient } from '@angular/common/http';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+
+export interface IShow {
+  id: number;
+  name: string;
+  image?: { medium: string; original: string };
+}
 
 @Injectable({ providedIn: 'root' })
 export class BackendService {
+  private apiUrl = 'https://api.tvmaze.com';
+
   constructor(private http: HttpClient) {}
 
-  getCastByShow(showId: any): Observable<any> {
-    return this.http.get('https://api.tvmaze.com/shows/' + showId + '/cast');
+  searchShows(query: string): Observable<IShow[]> {
+    return this.http.get<{ show: IShow }[]>(`${this.apiUrl}/search/shows?q=${query}`).pipe(
+      map(results => results.map(item => item.show)),
+      catchError(err => {
+        console.error('Search error:', err);
+        return throwError(() => new Error('Failed to search shows'));
+      })
+    );
   }
 
-  searchShows(name: any): Observable<any> {
-    return this.http.get('https://api.tvmaze.com/search/shows?q=' + name);
-  }
-
-  getAllShows(pageNum: any): Observable<any> {
-    return this.http.get('https://api.tvmaze.com/shows?page=' + pageNum);
+  getAllShows(): Observable<IShow[]> {
+    return this.http.get<IShow[]>(`${this.apiUrl}/shows`).pipe(
+      catchError(err => {
+        console.error('Load shows error:', err);
+        return throwError(() => new Error('Failed to load all shows'));
+      })
+    );
   }
 }
